@@ -4,6 +4,7 @@ import calculateTotalDuration from './utils/calculateTotalDuration';
 import createTag from './logic/createTag';
 import deleteRules from './logic/deleteRules';
 import { HookSequences } from './types';
+import getPlayState from './utils/getPauseState';
 
 interface Props {
   sequences: HookSequences;
@@ -18,30 +19,45 @@ export default function useAnimateGroup(props: Props) {
   const defaultArray = createArrayWithNumbers(sequences.length);
   const [styles, setStyles] = useState(defaultArray);
   const [isPlaying, setPlaying] = useState(false);
-  const animationNamesRef = useRef({});
+  const animationNamesRef: any = useRef([]);
+  const styleTagRef: any = useRef([]);
 
   useEffect(() => {
-    let localStyleTag;
-
-    // @ts-ignore
     sequences.forEach(({ keyframes = false }, i) => {
       if (!Array.isArray(keyframes)) return;
-      const animationName = createRandomName();
-      animationNamesRef.current[i] = animationName;
-      const { styleTag } = createTag({ animationName, keyframes });
-      localStyleTag = styleTag;
+
+      if (!animationNamesRef.current[i]) {
+        animationNamesRef.current[i] = {};
+        styleTagRef.current[i] = {};
+      }
+
+      animationNamesRef.current[i].forward = createRandomName();
+      let result = createTag({
+        animationName: animationNamesRef.current[i].forward,
+        keyframes,
+      });
+      styleTagRef.current[i].forward = result.styleTag;
+
+      animationNamesRef.current[i].reverse = createRandomName();
+      result = createTag({
+        animationName: animationNamesRef.current[i].reverse,
+        keyframes: keyframes.reverse(),
+      });
+      styleTagRef.current[i].reverse = result.styleTag;
     });
 
     return () => {
-      if (!localStyleTag) return;
-      Object.values(animationNamesRef).forEach(name => {
-        deleteRules(localStyleTag.sheet, name);
+      Object.values(animationNamesRef).forEach(({ forward, reverse }, i) => {
+        if (!styleTagRef[i]) return;
+        deleteRules(styleTagRef[i].sheet, forward);
+        deleteRules(styleTagRef[i].sheet, reverse);
       });
     };
   }, []);
 
   const play = (isPlay: boolean) => {
     let totalDuration = 0;
+    const animationRefWithOrder = isPlay ? animationNamesRef.current : [...animationNamesRef.current].reverse();
     const styles = (isPlay ? sequences : [...sequences].reverse()).map((current, currentIndex) => {
       const {
         duration = 0.3,
@@ -50,30 +66,25 @@ export default function useAnimateGroup(props: Props) {
         keyframes,
         iterationCount = 1,
         easeType = 'linear',
-        playState = 'running',
         direction = 'normal',
         fillMode = 'none',
         end = {},
         start = {},
       } = current;
       const delayDuration = currentIndex === 0 ? delay : totalDuration;
+      const transition = `all ${duration}s ${easeType} ${delayDuration}s`;
       totalDuration = calculateTotalDuration({ duration, delay, overlay }) + totalDuration;
 
-      if (keyframes) {
-        return isPlay
-          ? {
-              animation: `${duration}s ${easeType} ${delayDuration}s ${iterationCount} ${direction} ${fillMode} ${playState} ${
-                animationNamesRef.current[currentIndex]
-              }`,
-            }
-          : {};
-      }
-
-      const transition = `all ${duration}s ${easeType} ${delayDuration}s`;
-      return {
-        ...(isPlay ? end : start),
-        transition,
-      };
+      return keyframes
+        ? {
+            animation: `${duration}s ${easeType} ${delayDuration}s ${iterationCount} ${direction} ${fillMode} running ${
+              isPlay ? animationRefWithOrder[currentIndex].forward : animationRefWithOrder[currentIndex].reverse
+            }`,
+          }
+        : {
+            ...(isPlay ? end : start),
+            transition,
+          };
     });
 
     // @ts-ignore

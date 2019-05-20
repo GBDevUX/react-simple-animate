@@ -9,7 +9,7 @@ jest.mock('./utils/createRandomName', () => ({
 
 let UseAnimate;
 
-describe('useAnimate', () => {
+describe('useAnimateKeyframes', () => {
   let componentStyle;
 
   const TestHook = ({ callback }) => {
@@ -34,11 +34,11 @@ describe('useAnimate', () => {
   it('should toggle style correctly', () => {
     act(() => {
       expect(UseAnimate.play(true)).toBeUndefined();
-      expect(componentStyle).toEqual(null);
+      expect(componentStyle).toEqual({ animation: '0.3s linear 0s 1 normal none running ' });
     });
 
     expect(componentStyle).toEqual({
-      animation: '0.3s linear 0s 1 normal none running test',
+      animation: '0.3s linear 0s 1 normal none running ',
     });
   });
 });

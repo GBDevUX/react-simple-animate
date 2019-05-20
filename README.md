@@ -1,4 +1,4 @@
-<div align="center"><a href="https://react-simple-animate.now.sh"><img src="https://raw.githubusercontent.com/bluebill1049/react-simple-animate/master/example/logo.png" alt="React Simple Animate Logo - UI Animation Made Simple" width="180px" height="180px" /></a></div>
+<div align="center"><a href="https://react-simple-animate.now.sh"><img src="https://raw.githubusercontent.com/bluebill1049/react-simple-animate/master/logo.png" alt="React Simple Animate Logo - UI Animation Made Simple" width="180px" height="180px" /></a></div>
 
 # [React Simple Animate](https://react-simple-animate.now.sh) 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+UI+animation+made+simple&url=https://react-simple-animate.now.sh/) [![CircleCI](https://circleci.com/gh/bluebill1049/react-simple-animate.svg?style=svg)](https://circleci.com/gh/bluebill1049/react-simple-animate) [![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-simple-animate/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-simple-animate?branch=master) [![npm downloads](https://img.shields.io/npm/dm/react-simple-animate.svg?style=flat-square)](https://www.npmjs.com/package/react-simple-animate) [![npm](https://img.shields.io/npm/dt/react-simple-animate.svg?style=flat-square)](https://www.npmjs.com/package/react-simple-animate) [![npm](https://badgen.net/bundlephobia/minzip/react-simple-animate)](https://badgen.net/bundlephobia/minzip/react-simple-animate)
@@ -35,6 +35,7 @@ export default () => (
     <Animate play start={{ opacity: 0 }} end={{ opacity: 1 }}>
       <h1>React simple animate</h1>
     </Animate>
+    
     {/* This example demonstrate animate keyframes with individual element. */}
     <AnimateKeyframes
       play
@@ -43,6 +44,7 @@ export default () => (
     >
       <h1>React simple animate with keyframes</h1>
     </AnimateKeyframes>
+    
     {/* This example demonstrate animate group of animation with sequenceIndex. */}
     <AnimateGroup play>
       <Animate start={{ opacity: 0 }} end={{ opacity: 1 }} sequenceIndex={0}>
